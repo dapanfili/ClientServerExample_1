@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<history>
+   <processor signature="gcc noversion nomachine -std=c++0x -c -I../../../../../usr/include/jsoncpp">
+      <target file="samplemain.o" lastModified="161aaf56380">
+         <source file="../../../src/cpp/client/samplemain.cpp" lastModified="161aad86d70"/>
+      </target>
+   </processor>
+</history>

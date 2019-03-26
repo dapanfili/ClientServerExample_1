@@ -1,0 +1,72 @@
+{
+  "ASU-Brickyard" : 
+  {
+    "ele" : 1300,
+    "lat" : 33.423499999999997,
+    "lon" : -111.9389,
+    "name" : "ASU-Brickyard"
+  },
+  "Anchorage-Alaska" : 
+  {
+    "ele" : 102,
+    "lat" : 61.216700000000003,
+    "lon" : -149.90000000000001,
+    "name" : "Anchorage-Alaska"
+  },
+  "Barrow-Alaska" : 
+  {
+    "ele" : 10,
+    "lat" : 71.295599999999993,
+    "lon" : -156.7664,
+    "name" : "Barrow-Alaska"
+  },
+  "Calgary-Alberta" : 
+  {
+    "ele" : 1048,
+    "lat" : 51.045299999999997,
+    "lon" : -114.0581,
+    "name" : "Calgary-Alberta"
+  },
+  "London-England" : 
+  {
+    "ele" : 79,
+    "lat" : 51.507199999999997,
+    "lon" : 0.1275,
+    "name" : "London-England"
+  },
+  "Moscow-Russia" : 
+  {
+    "ele" : 495,
+    "lat" : 55.75,
+    "lon" : 37.616700000000002,
+    "name" : "Moscow-Russia"
+  },
+  "New-York-NY" : 
+  {
+    "ele" : 85,
+    "lat" : 40.712699999999998,
+    "lon" : -74.005899999999997,
+    "name" : "New-York-NY"
+  },
+  "Paris-France" : 
+  {
+    "ele" : 115,
+    "lat" : 48.856699999999996,
+    "lon" : 2.3508,
+    "name" : "Paris-France"
+  },
+  "Salt-Lake-City-UT" : 
+  {
+    "ele" : 4226,
+    "lat" : 40.760800000000003,
+    "lon" : -111.89100000000001,
+    "name" : "Salt-Lake-City-UT"
+  },
+  "Test" : 
+  {
+    "ele" : 4,
+    "lat" : 4,
+    "lon" : 4,
+    "name" : "Test"
+  }
+}

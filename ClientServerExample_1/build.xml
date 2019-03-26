@@ -1,0 +1,221 @@
+<?xml version="1.0"?>
+<project name="SER 321 Assign 5 json-rpc" default="targets" basedir=".">
+   <taskdef resource="cpptasks.tasks">
+	<classpath>
+		<fileset dir="${basedir}/lib">
+			<include name="cpptasks.jar"/>
+		</fileset>		
+	</classpath>
+   </taskdef>
+   <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+	<classpath>
+		<fileset dir="${basedir}/lib">
+		
+			<include name="ant-contrib-1.0b3.jar"/>
+		</fileset>		
+	</classpath>
+   </taskdef>
+   <property name="src.dir" value="src"/>
+   <property name="dist.dir" value="bin"/>
+   <property name="classes.dir" value="classes"/>         
+   <property name="obj.dir" value="obj"/>
+   <property name="host.name" value="127.0.0.1"/>
+  <property name="port.num" value="8080"/>
+   <property name="json.file.name" value="waypointRPC.json"/>
+
+   <property environment="env"/>
+   <property name="ostype" value="${env.OSTYPE}"/>
+
+   <path id="compile.classpath">
+      <pathelement location="${build}"/>
+      <fileset dir="${basedir}/lib">
+         <include name="json.jar"/>
+      </fileset>
+   </path>
+
+   <path id="java.compile.classpath">
+	<pathelement location = "${classes.dir}"/>
+	<fileset dir="${basedir}/lib">
+	<include name="json.jar"/>
+      </fileset>
+   </path>
+
+   <target name="targets">
+      <echo message="Targets are clean, prepare, generate.server.stub, build.server, generate.client.stub, build.client, build.java.client,execute.cpp.client, targets"/>
+      <echo message="base directory is: ${basedir}"/>
+      <echo message="execute server with: ./bin/WaypointServer ${port.num}"/>
+      <echo message="execute cpp client with: ant execute.cpp.client -Dhost.name=192.168.2.2 -Dportnum=8080 "/>
+      <echo message="invoke java client with: ant execute.java.client -Dhost.name=192.168.2.2 -Dportnum=8080"/>
+      <echo message="base directory is: ${basedir}"/>
+      <!--<echo message="invoke java client with: java -cp classes:lib/json.jar ser321.jsonrpc.CalcJavaClient http://${host.name}:${port.num}"/>  -->  <!--CHANGE WHEN YOU DO JAVA-->
+   </target>
+  
+   <target name="clean">
+      <delete dir="${classes.dir}" failonerror="false"/>
+      <delete dir="${dist.dir}" failonerror="false"/>
+      <delete dir="${obj.dir}" failonerror="false"/>
+      <delete file="${src.dir}/server/waypointserverstub.h"
+              failonerror="false"/>
+      <delete file="${src.dir}/cpp/client/waypointclientstub.h"
+              failonerror="false"/>
+   </target>
+
+   <target name="prepare">
+      <mkdir dir="${classes.dir}"/>
+      <mkdir dir="${dist.dir}" />
+      <mkdir dir="${obj.dir}/cpp/client" />
+      <mkdir dir="${obj.dir}/cpp/server" />
+      <if>
+         <isset property="env.USERNAME"/>
+         <then>
+            <echo message="detected username is: ${env.USERNAME}"/>
+         </then>
+      <elseif>
+         <isset property="env.USER"/>
+         <then>
+            <echo message="detected user is: ${env.USER}"/>
+         </then>
+      </elseif>
+      </if>
+      <echo message="host name is: ${os.name}"/>
+      <echo message="host arch is: ${os.arch}"/>
+      <echo message="host version is: ${os.version}"/>
+      <echo message="base directory is: ${basedir}"/>
+
+      <!-- Platform identification -->
+      <condition property="build.host.islinux">
+        <and>
+          <os family="unix" />
+          <not>
+            <contains string="${os.name}" substring="pc"
+                      casesensitive="false" />
+          </not>
+        </and>
+      </condition>
+      <condition property="build.host.platform" value="linux">
+        <isset property="build.host.islinux" />
+      </condition>
+
+      <condition property="build.host.ispc">
+        <and>
+          <os family="unix" />
+          <contains string="${os.name}" substring="pc" casesensitive="false"/>
+        </and>
+      </condition>
+      <condition property="build.host.platform" value="pc">
+        <isset property="build.host.ispc" />
+      </condition>
+
+      <fail unless="build.host.platform"
+            message="Building on ${os.name} is not supported" />
+      <echo message="build.host.platform is: ${build.host.platform}"/>
+      <if>
+         <isset property="build.host.ismac"/>
+         <then>
+            <echo message="detected a pc host"/>
+	    <property name="cxxflag" value="-std=c++11"/>
+	    <!--REMOVED local IN LAST PART WITH jsoncpp. NECESSARY IN OTHER LOCATIONS?-->
+            <property name="includepath" value="/opt/local/include:/usr/include/jsoncpp"/>
+            <property name="client.lib.path" value="/opt/local/lib"/>
+            <property name="client.lib.list" value="c++,jsoncpp,jsonrpccpp-client,jsonrpccpp-common,microhttpd,fltk,stdc++,m"/>
+            <property name="server.lib.path" value="/opt/local/lib"/>
+            <property name="server.lib.list" value="c++,jsoncpp,jsonrpccpp-server,jsonrpccpp-common,microhttpd,stdc++,m"/>  <!--DON'T NEED fltk or stdc++-->
+         </then>
+      <elseif>
+         <isset property="build.host.islinux"/>
+         <then>
+            <echo message="detected a linux host"/>
+            <property name="includepath" value="/usr/include/jsoncpp"/>
+            <property name="client.lib.path" value="/usr/local/lib"/>
+            <property name="client.lib.list" value="jsoncpp,jsonrpccpp-client,jsonrpccpp-common,microhttpd,fltk,stdc++,m"/>
+            <property name="server.lib.path" value="/usr/local/lib"/>
+            <property name="server.lib.list" value="jsoncpp,jsonrpccpp-server,jsonrpccpp-common,microhttpd,stdc++,m"/>
+         </then>
+      </elseif>
+      <else>
+         <echo message="failed to detect a host I know how to build on"/>
+      </else>
+   </if>
+   </target>
+
+   <target name="build.all"
+           depends="clean,prepare,build.server,build.client,build.java.client"
+           description="Clean then build cpp server, cpp client and java client"/>
+
+   <target name="generate.client.stub" depends="prepare">
+      <exec dir="${basedir}" executable="jsonrpcstub">
+         <arg line="${json.file.name} --cpp-client=waypointclientstub"/>		
+      </exec>
+      <copy file="waypointclientstub.h"
+            tofile="${src.dir}/cpp/client/waypointclientstub.h"/>
+      <delete file="waypointclientstub.h"/>
+   </target>
+
+  <target name="build.java.client" depends="prepare"
+          description="Compile Java client sources">
+     <!-- Compile Java classes as necessary -->
+     <javac srcdir="${src.dir}/java"
+            destdir="${classes.dir}"
+            includeantruntime="false">
+        <classpath refid="compile.classpath"/>
+    </javac>
+  </target>
+
+   <target name="build.client" depends="generate.client.stub">
+      <cc outtype="executable" subsystem="console"
+          outfile="${dist.dir}/WaypointClient"
+          objdir="${obj.dir}/cpp/client">
+         <includepath>
+            <pathelement path="${includepath}"/>
+         </includepath>
+         <libset dir="${client.lib.path}" libs="${client.lib.list}"/>
+         <fileset dir="${src.dir}/cpp/client" includes="WaypointGui.cpp,samplemain.cpp"/>
+	 <compilerarg value="-std=c++0x"/>
+      </cc>
+   </target>
+
+   <target name="generate.server.stub" depends="prepare">
+      <exec dir="${basedir}" executable="jsonrpcstub">
+         <arg line="${json.file.name} --cpp-server=waypointserverstub"/>
+      </exec>
+      <copy file="waypointserverstub.h"
+            tofile="${src.dir}/cpp/server/waypointserverstub.h"/>
+      <delete file="waypointserverstub.h"/>
+   </target>
+
+   <target name="build.server" depends="generate.server.stub">
+     <cc outtype="executable" subsystem="console"
+         outfile="${dist.dir}/WaypointServer"
+         objdir="${obj.dir}/cpp/server">
+         <compiler name="g++"/>
+         <includepath>
+            <pathelement path="${includepath}"/>
+         </includepath>
+         <libset dir="${server.lib.path}" libs="${server.lib.list}"/>
+         <fileset dir="${src.dir}/cpp/server"
+                  includes="Waypoint.cpp,waypointserver.cpp"/>
+	 <compilerarg value="-std=c++0x"/>
+      </cc>
+   </target>
+
+
+ <target name="execute.java.client" depends="build.java.client"
+           description="Start client">
+         <echo message="user.dir is: ${user.dir}"/>
+         
+         <java classname="WaypointJavaClient" fork="yes">
+           <classpath refid="java.compile.classpath"/>
+        
+           <arg value="${host.name}"/> 
+           <arg value="${port.num}"/> 
+         </java>
+   </target>
+
+<target name = "execute.cpp.client" depends="build.client">
+	<exec executable="./bin/WaypointClient">
+		<arg value ="${host.name}"/>
+		<arg value ="${port.num}"/>
+	</exec>
+</target>
+
+</project>

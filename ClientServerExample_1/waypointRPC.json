@@ -1,0 +1,47 @@
+[
+    {	
+        "method": "addWaypoint",
+        "params": [11.0,11.0,111.0,"ASU-Brickyard"],
+	"returns": true
+    },
+
+    {
+	"method": "removeWaypoint",
+        "params": ["name"],
+	"returns": true
+    },
+    {
+	"method": "modifyWaypoint",
+        "params": [11.0,11.0,11.0,"name"],
+	"returns": true
+	
+    },
+
+    {
+	"method": "saveJsonFile",
+        "params": ["jsonFileName"]
+    },
+
+    
+    {
+	"method": "calcDistAndBear",
+        "params": ["name","name"],
+	"returns": "name"
+    },
+
+{
+	"method": "getList",
+        "params": [],
+	"returns": []
+    },
+{
+	"method": "removeAllVec",
+        "params": []
+	
+    },
+{
+	"method": "getWaypoint",
+        "params": ["name"],
+	"returns": {}
+    }
+    ]
